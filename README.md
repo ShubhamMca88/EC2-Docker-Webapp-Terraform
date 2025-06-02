@@ -60,6 +60,28 @@ You can customize the deployment by modifying the `terraform.tfvars` file or by 
 terraform apply -var="instance_type=t2.small" -var="environment=staging"
 ```
 
+### Example terraform.tfvars
+
+```hcl
+ami_id               = "ami-0e35ddab05955cf57"  # Ubuntu 22.04 LTS in ap-south-1
+instance_type        = "t3.micro"
+instance_name        = "docker-webapp"
+key_name             = "webapp-key"
+public_key_path      = "./id_rsa.pub"
+volume_size          = 8
+volume_type          = "gp3"
+project_name         = "docker-webapp"
+environment          = "dev"
+region               = "ap-south-1"
+availability_zone    = "ap-south-1a"
+vpc_cidr             = "10.0.0.0/16"
+public_subnet_cidr   = "10.0.1.0/24"
+private_subnet_cidr  = "10.0.2.0/24"
+public_ingress_ports = [22, 80, 443]
+private_ingress_ports = [22, 80, 443]
+health_check_path    = "/"
+```
+
 ### Key Variables
 
 | Variable | Description | Default |
@@ -68,7 +90,10 @@ terraform apply -var="instance_type=t2.small" -var="environment=staging"
 | `region` | AWS region | ap-south-1 |
 | `environment` | Deployment environment | dev |
 | `volume_size` | Root volume size in GB | 8 |
-| `ingress_ports` | Allowed inbound ports | [22, 80, 443] |
+| `public_ingress_ports` | Allowed inbound ports for ALB | [22, 80, 443] |
+| `private_ingress_ports` | Allowed inbound ports for EC2 | [22, 80, 443] |
+| `public_subnet_cidr` | CIDR for public subnet | 10.0.1.0/24 |
+| `private_subnet_cidr` | CIDR for private subnet | 10.0.2.0/24 |
 
 ## Project Structure
 
@@ -79,6 +104,7 @@ ec2-instance-tf/
 ├── variables.tf     # Input variables
 ├── outputs.tf       # Output values
 ├── providers.tf     # Provider configuration
+├── terraform.tfvars # Variable values
 ├── docker_webapp.sh # User data script for Docker installation
 └── README.md        # This file
 ```
@@ -87,8 +113,8 @@ ec2-instance-tf/
 
 After successful deployment, Terraform will output:
 - Instance ID
-- Public IP address
-- Public DNS name
+- Instance private IP address
+- ALB DNS name
 - Web application URL
 
 ## Cleanup
@@ -101,9 +127,11 @@ terraform destroy
 
 ## Security Considerations
 
-- The security group allows SSH access from any IP (0.0.0.0/0). For production, restrict this to your IP range.
-- The EC2 instance uses an encrypted EBS volume for enhanced security.
-- SSH key-based authentication is used instead of passwords.
+- The EC2 instance is in a private subnet and not directly accessible from the internet
+- The ALB security group allows HTTP/HTTPS access from any IP (0.0.0.0/0)
+- The EC2 instance security group only allows traffic from the ALB
+- The EC2 instance uses an encrypted EBS volume for enhanced security
+- SSH key-based authentication is used instead of passwords
 
 ## License
 
