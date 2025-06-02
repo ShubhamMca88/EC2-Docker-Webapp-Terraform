@@ -70,14 +70,32 @@ variable "vpc_cidr" {
   default     = "10.0.0.0/16"
 }
 
-variable "subnet_cidr" {
-  description = "CIDR block for subnet"
+variable "public_subnet_cidr" {
+  description = "CIDR block for public subnet"
   type        = string
   default     = "10.0.1.0/24"
 }
 
-variable "ingress_ports" {
-  description = "List of ingress ports to allow in the security group"
+variable "private_subnet_cidr" {
+  description = "CIDR block for private subnet"
+  type        = string
+  default     = "10.0.2.0/24"
+}
+
+variable "public_ingress_ports" {
+  description = "List of ingress ports to allow in the public security group"
   type        = list(number)
   default     = [22, 80, 443]
+}
+
+variable "private_ingress_ports" {
+  description = "List of ingress ports to allow in the private security group"
+  type        = list(number)
+  default     = [22, 80, 443]
+}
+
+variable "health_check_path" {
+  description = "Path for ALB health check"
+  type        = string
+  default     = "/"
 }

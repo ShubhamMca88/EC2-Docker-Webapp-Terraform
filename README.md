@@ -6,21 +6,23 @@ This project provides infrastructure as code (IaC) for deploying a containerized
 
 This Terraform configuration automatically provisions and configures:
 
-- AWS EC2 instance running Ubuntu 22.04 LTS
+- AWS EC2 instance running Ubuntu 22.04 LTS in a private subnet
+- Application Load Balancer (ALB) in a public subnet
 - Docker engine installed via user_data script
 - Nginx web server running in a Docker container
-- Complete networking setup with VPC, subnet, and internet gateway
-- Security group with proper inbound/outbound rules
+- Complete networking setup with VPC, public/private subnets, NAT gateway, and internet gateway
+- Security groups with proper inbound/outbound rules
 - SSH key pair for secure instance access
 
 ## Architecture Components
 
-- **Compute**: t2.micro EC2 instance (configurable)
-- **Networking**: Custom VPC with public subnet
-- **Security**: Firewall rules allowing SSH, HTTP, and HTTPS
+- **Compute**: t2.micro EC2 instance (configurable) in private subnet
+- **Load Balancing**: Application Load Balancer in public subnet
+- **Networking**: Custom VPC with public and private subnets, NAT gateway
+- **Security**: Separate security groups for public and private resources
 - **Storage**: 8GB encrypted EBS volume (configurable)
 - **Container**: Nginx web server running in Docker
-- **Access**: SSH key-based authentication
+- **Access**: SSH key-based authentication via bastion host (not included)
 
 ## Prerequisites
 

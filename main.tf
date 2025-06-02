@@ -3,9 +3,9 @@ resource "aws_instance" "webapp" {
   ami                         = var.ami_id
   instance_type               = var.instance_type
   key_name                    = aws_key_pair.webapp_key.key_name
-  subnet_id                   = aws_subnet.public_subnet.id
-  vpc_security_group_ids      = [aws_security_group.webapp_sg.id]
-  associate_public_ip_address = true
+  subnet_id                   = aws_subnet.private_subnet.id
+  vpc_security_group_ids      = [aws_security_group.private_sg.id]
+  associate_public_ip_address = false
   user_data                   = file("${path.module}/docker_webapp.sh")
   user_data_replace_on_change = true
   availability_zone           = var.availability_zone
